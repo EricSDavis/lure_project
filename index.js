@@ -209,7 +209,9 @@ $(document).ready(function() {
             regionPlot
             .selectAll("rect")
             .data(data)
-                .attr('x', function(d) {return newX(+d.start)});
+                .attr('x', function(d) {return newX(+d.start)})
+		.attr("y", function(d) { return y(d.GC); })
+            	.attr("transform","translate(" + transform.x + "," + 0 + ") scale(" + transform.k + "," + 1 + ")");
 
             // New XAxis bound values(min/max): newX.domain()[0],newX.domain()[1], used for filtering data records
             //console.log(newX.domain()[0]);
