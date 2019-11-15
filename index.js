@@ -35,7 +35,7 @@ function regionView(data) {
     var zoom = d3.zoom()
         .extent([[0, 0], [width,height]])
         .scaleExtent([1, 20])
-        .on("zoom", updateChart);        
+        .on("zoom", updateChart);
         
     // Create svg element
     var regionPlot = d3.select("body")
@@ -132,6 +132,21 @@ function regionView(data) {
         .attr("x", 0)
         .attr("y", 0);
 
+    // Build Histogram(data, colfun, plotTitle, breaks, barColor, xticks, yticks)
+    buildHistogram(data, d => d.shift, "Distance from Restriction Site", 10, "steelblue", 5, 5);
+    buildHistogram(data, d => d.GC, "GC Fraction", 10, "#69b3a2", 5, 5);
+    buildHistogram(data, d => d.rep, "Base pairs from Repetitive Regions", 5, "steelblue", 5, 5);
+    buildHistogram(data, d => d.qualityScore, "Quality Score", 10, "#69b3a2", 5, 5);
+
+    // Build D3 table
+    makeTable(data, colNames);
+
+    // Apply bootstrap styling and pagination to table using jquery, source: https://datatables.net/examples/styling/bootstrap
+    $('#probeTable').DataTable();
+    d3.select("#probeTable_wrapper").style("width", 1400);
+
+    var xdomain = new Array(2);
+
     // Zoom in function updating the graph axis and rect
     function updateChart() {
         var transform = d3.zoomTransform(this);
@@ -141,15 +156,35 @@ function regionView(data) {
         xaxis.call(d3.axisBottom(newX));
         // update rect position
         regionPlot
-        .selectAll("rect")
-        .data(data)
-        .attr('x', function(d) {return newX(+d.start)})
-        .attr("y", function(d) { return y(d.GC); })
-                .attr("transform","translate(" + transform.x + "," + 0 + ") scale(" + transform.k + "," + 1 + ")");
+            .selectAll("rect")
+            .data(data)
+            .attr('x', function(d) {return newX(+d.start)})
+            .attr("y", function(d) { return y(d.GC); })
+                    .attr("transform","translate(" + transform.x + "," + 0 + ") scale(" + transform.k + "," + 1 + ")");
 
         // New XAxis bound values(min/max): newX.domain()[0],newX.domain()[1], used for filtering data records
-        //console.log(newX.domain()[0]);
+        // console.log(newX.domain()[0]);
+        xdomain[0] = newX.domain()[0];
+        xdomain[1] = newX.domain()[1];
+        // console.log(xdomain);
+
+        var newdata = [];
+
+        data.forEach(function(d, i){
+            d.start > xdomain[0] && d.stop < xdomain[1] ? newdata.push(d) : console.log(newdata);
+        });
+
+        // Write update table function
+        updateTable(newdata, colNames);
     }
+
+    function updateTable(newdata, colNames) {
+        var table = d3.select("body").selectAll("table").remove();
+        makeTable(newdata, colNames);
+        
+    }
+
+
 }
 
 // Define function to draw histogram
@@ -279,22 +314,22 @@ $(document).ready(function() {
     d3.csv("probeData.csv").then(function(data){
         console.log(data);
 
-        // Build regionView
+        // Build regionView and return x-zoom bounds
         regionView(data);
-                
-        // Build Histogram(data, colfun, plotTitle, breaks, barColor, xticks, yticks)
-        buildHistogram(data, d => d.shift, "Distance from Restriction Site", 10, "steelblue", 5, 5);
-        buildHistogram(data, d => d.GC, "GC Fraction", 10, "#69b3a2", 5, 5);
-        buildHistogram(data, d => d.rep, "Base pairs from Repetitive Regions", 5, "steelblue", 5, 5);
-        buildHistogram(data, d => d.qualityScore, "Quality Score", 10, "#69b3a2", 5, 5);
+        
+        // // Build Histogram(data, colfun, plotTitle, breaks, barColor, xticks, yticks)
+        // buildHistogram(data, d => d.shift, "Distance from Restriction Site", 10, "steelblue", 5, 5);
+        // buildHistogram(data, d => d.GC, "GC Fraction", 10, "#69b3a2", 5, 5);
+        // buildHistogram(data, d => d.rep, "Base pairs from Repetitive Regions", 5, "steelblue", 5, 5);
+        // buildHistogram(data, d => d.qualityScore, "Quality Score", 10, "#69b3a2", 5, 5);
 
 
-        // Build D3 table
-        makeTable(data, colNames);
+        // // Build D3 table
+        // makeTable(data, colNames);
 
-        // Apply bootstrap styling and pagination to table using jquery, source: https://datatables.net/examples/styling/bootstrap
-        $('#probeTable').DataTable();
-        d3.select("#probeTable_wrapper").style("width", 1400);
+        // // Apply bootstrap styling and pagination to table using jquery, source: https://datatables.net/examples/styling/bootstrap
+        // $('#probeTable').DataTable();
+        // d3.select("#probeTable_wrapper").style("width", 1400);
         
     });
 });
