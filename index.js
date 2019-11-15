@@ -179,9 +179,13 @@ function regionView(data) {
     }
 
     function updateTable(newdata, colNames) {
-        var table = d3.select("body").selectAll("table").remove();
+        d3.select("#probeTable_wrapper").remove();
+        d3.select("body").selectAll("table").remove();
         makeTable(newdata, colNames);
-        
+
+        // Apply bootstrap styling and pagination to table using jquery, source: https://datatables.net/examples/styling/bootstrap
+        $('#probeTable').DataTable();
+        d3.select("#probeTable_wrapper").style("width", 1400);        
     }
 
 
