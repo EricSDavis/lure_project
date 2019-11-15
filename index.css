@@ -1,17 +1,21 @@
-/* table {
-    border-collapse: collapse;
-    width: 100%;
-}
-
-th, td {
-    text-align: left;
-    padding: 8px;
-}
-
-tr:nth-child(even) {
-    background-color: #f2f2f2;
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
 }
   
-tr:hover {
-    background-color: #cdcdcd;
-} */
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+  
+.grid path {
+    stroke-width: 0;
+}
+  
+.legend rect {
+    fill:white;
+    stroke:black;
+    opacity:0.8;
+}
