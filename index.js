@@ -92,7 +92,51 @@ function regionView(data) {
         .attr("transform","translate(" + (width/2) + " ," + (height + margin.top + 20) + ")")
         .style("text-anchor", "middle")
         .text("Position");
-           
+
+
+    // Create a tooltip, sources: https://stackoverflow.com/questions/35623333/tooltip-on-mouseover-d3 
+    //  and https://www.d3-graph-gallery.com/graph/interactivity_tooltip.html
+    var Tooltip = d3.select("body")
+        .append("div")
+        .attr("id", "mytooltip")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+        .style("opacity", 0);
+        // .style("visibility", "hidden");
+
+    // Three function that change the tooltip when user hover / move / leave a cell
+    var mouseover = function(d) {
+        Tooltip
+            .transition().duration(250)
+            .style("opacity", 1)            
+        d3.select(this)
+            .attr('fill','orange')
+    }
+    var mousemove = function(d) {
+        Tooltip
+            .html(d.chr + ":" + 
+                  d.start.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "-" +
+                  d.stop.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "<br>" +
+                  d.seq.slice(0,10) + "..." + d.seq.slice(d.seq.length-10, d.seq.length) + "<br>" +
+                  "GC: " + (d.GC*100).toFixed(1) + "%" + "<br>" +
+                  "Repetitive Bases: " + d.rep + "<br>" +
+                  "Quality Score: " + (d.qualityScore*100).toFixed(2) + "%")
+            return Tooltip.style("top", (d3.event.pageY-10)+"px") 
+            .style("left",(d3.event.pageX+10)+"px");
+    }
+    var mouseleave = function(d) {
+        Tooltip
+            .transition().duration(250)
+            .style("opacity", 0)
+        d3.select(this)
+            .attr('fill', d => quality(d.quality))
+    }
 
     // Append rectangles
     regionPlot
@@ -108,12 +152,9 @@ function regionView(data) {
                 //.attr("y", function() { return y(Math.random()); });
                 .attr("y", function(d) { return y(d.GC); })
                 .attr("fill", function(d) { return quality(d.quality); })
-                    .on("mouseover", function(d){
-                        d3.select(this).attr('fill','orange');
-                    })
-          			.on("mouseout", function(d){
-          			    d3.select(this).attr('fill',function(d) { return quality(d.quality); });
-                    });
+            .on("mouseover", mouseover)
+            .on("mousemove", mousemove)
+            .on("mouseleave", mouseleave);
                       
     // Add a clipPath: everything out of this area won't be drawn.
     var clip = regionPlot.append("defs").append("SVG:clipPath")
