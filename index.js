@@ -34,7 +34,7 @@ function regionView(data) {
     // Define the zoom variable, scale and call function
     var zoom = d3.zoom()
         .extent([[0, 0], [width,height]])
-        .scaleExtent([1, 20])
+        .scaleExtent([0.8, 50])
         .on("zoom", updateChart);
         
     // Create svg element
@@ -103,25 +103,17 @@ function regionView(data) {
             .enter()
             .append("rect")
                 .attr("height", height*0.025)
-                .attr("width", function(d) {
-                    var startPos = x(+d.start);
-                    var stopPos = x(+d.stop);
-                    return stopPos - startPos; 
-                })
-                .attr("x", function(d) {
-                    var startPos = +d.start;
-                    return x(startPos);
-                })
+                .attr("width", d => x(+d.stop) - x(+d.start))
+                .attr('x', d => x(+d.start))
                 //.attr("y", function() { return y(Math.random()); });
                 .attr("y", function(d) { return y(d.GC); })
                 .attr("fill", function(d) { return quality(d.quality); })
-                    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
                     .on("mouseover", function(d){
-                    d3.select(this).attr('fill','orange');
+                        d3.select(this).attr('fill','orange');
                     })
           			.on("mouseout", function(d){
-          			d3.select(this).attr('fill',function(d) { return quality(d.quality); });
-                      });
+          			    d3.select(this).attr('fill',function(d) { return quality(d.quality); });
+                    });
                       
     // Add a clipPath: everything out of this area won't be drawn.
     var clip = regionPlot.append("defs").append("SVG:clipPath")
@@ -158,7 +150,7 @@ function regionView(data) {
         regionPlot
             .selectAll("rect")
             .data(data)
-            .attr('x', function(d) {return newX(+d.start)})
+            .attr('x', function(d) {return x(+d.start)})
             .attr("y", function(d) { return y(d.GC); })
                     .attr("transform","translate(" + transform.x + "," + 0 + ") scale(" + transform.k + "," + 1 + ")");
 
@@ -334,6 +326,8 @@ $(document).ready(function() {
         // // Apply bootstrap styling and pagination to table using jquery, source: https://datatables.net/examples/styling/bootstrap
         // $('#probeTable').DataTable();
         // d3.select("#probeTable_wrapper").style("width", 1400);
+
+        
         
     });
 });
