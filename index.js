@@ -107,14 +107,15 @@ function regionView(data) {
         .style("border-width", "2px")
         .style("border-radius", "5px")
         .style("padding", "5px")
-        .style("opacity", 0);
-        // .style("visibility", "hidden");
+        .style("opacity", 0)
+        .style("visibility", "hidden");
 
     // Three function that change the tooltip when user hover / move / leave a cell
     var mouseover = function(d) {
         Tooltip
             .transition().duration(250)
-            .style("opacity", 1)            
+            .style("opacity", 1)
+            .style("visibility", "visible")        
         d3.select(this)
             .attr('fill','orange')
     }
@@ -134,6 +135,7 @@ function regionView(data) {
         Tooltip
             .transition().duration(250)
             .style("opacity", 0)
+            .style("visibility", "hidden")
         d3.select(this)
             .attr('fill', d => quality(d.quality))
     }
