@@ -110,7 +110,7 @@ function regionView(data) {
         .style("opacity", 0)
         .style("visibility", "hidden");
 
-    // Three function that change the tooltip when user hover / move / leave a cell
+    // Three functions that change the tooltip when user hover / move / leave a cell
     var mouseover = function(d) {
         Tooltip
             .transition().duration(250)
@@ -182,7 +182,7 @@ function regionView(data) {
 
     var xdomain = new Array(2);
 
-    // Zoom in function updating the graph axis and rect
+    // Update charts in response to zoom action
     function updateChart() {
         var transform = d3.zoomTransform(this);
         // recover the new scale
@@ -197,11 +197,9 @@ function regionView(data) {
             .attr("y", function(d) { return y(d.GC); })
                     .attr("transform","translate(" + transform.x + "," + 0 + ") scale(" + transform.k + "," + 1 + ")");
 
-        // New XAxis bound values(min/max): newX.domain()[0],newX.domain()[1], used for filtering data records
-        // console.log(newX.domain()[0]);
+        // Capture and filter data by new zoom bounds
         xdomain[0] = newX.domain()[0];
         xdomain[1] = newX.domain()[1];
-        // console.log(xdomain);
 
         var newdata = [];
 
@@ -209,10 +207,19 @@ function regionView(data) {
             d.start > xdomain[0] && d.stop < xdomain[1] ? newdata.push(d) : console.log(newdata);
         });
 
-        // Write update table function
+
+        // Call update histogram functions
+        updateHistogram(newdata, d => d.shift, "Distance from Restriction Site", 10, "steelblue", 5, 5);
+        updateHistogram(newdata, d => d.GC, "GC Fraction", 10, "#69b3a2", 5, 5);
+        updateHistogram(newdata, d => d.rep, "Base pairs from Repetitive Regions", 5, "steelblue", 5, 5);
+        updateHistogram(newdata, d => d.qualityScore, "Quality Score", 10, "#69b3a2", 5, 5);
+
+        // Call update table function
         updateTable(newdata, colNames);
+
     }
 
+    // Function to remove and upate the data table
     function updateTable(newdata, colNames) {
         d3.select("#probeTable_wrapper").remove();
         d3.select("body").selectAll("table").remove();
@@ -221,6 +228,12 @@ function regionView(data) {
         // Apply bootstrap styling and pagination to table using jquery, source: https://datatables.net/examples/styling/bootstrap
         $('#probeTable').DataTable();
         d3.select("#probeTable_wrapper").style("width", 1400);        
+    }
+
+    // Function to remove and update histograms
+    function updateHistogram(newdata, colfun, plotTitle, breaks, barColor, xticks, yticks) {
+        d3.select(".histogram").remove();
+        buildHistogram(newdata, colfun, plotTitle, breaks, barColor, xticks, yticks);
     }
 
 
@@ -242,6 +255,7 @@ function buildHistogram(data, colfun, plotTitle, breaks, barColor, xticks, ytick
     // Create svg element
     var histPlot = d3.select("body")
         .append("svg")
+            .attr("class", "histogram")
             .attr("width", histWidth + histMargin.left + histMargin.right)
             .attr("height", histHeight + histMargin.top + histMargin.bottom)
         .append("g")
@@ -370,8 +384,6 @@ $(document).ready(function() {
         // $('#probeTable').DataTable();
         // d3.select("#probeTable_wrapper").style("width", 1400);
 
-        
-        
     });
 });
 
