@@ -211,6 +211,7 @@ function regionView(data, data2) {
         .attr("y", 0);
 
     // Build Histogram(data, colfun, plotTitle, breaks, barColor, xticks, yticks)
+    d3.select("body").append("div").attr("id", "summaryView");
     buildHistogram(data, d => d.shift, "Distance from Restriction Site", 10, "steelblue", 5, 5);
     buildHistogram(data, d => d.GC, "GC Fraction", 10, "#69b3a2", 5, 5);
     buildHistogram(data, d => d.rep, "Base pairs from Repetitive Regions", 5, "steelblue", 5, 5);
@@ -397,7 +398,7 @@ function buildHistogram(data, colfun, plotTitle, breaks, barColor, xticks, ytick
     var histXmax = d3.max(data, colfun);
     
     // Create svg element
-    var histPlot = d3.select("body")
+    var histPlot = d3.select("#summaryView")
         .append("svg")
             .attr("class", "histogram")
             .attr("width", histWidth + histMargin.left + histMargin.right)

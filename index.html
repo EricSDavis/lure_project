@@ -19,41 +19,41 @@
     </head>
 
 <body> 
-    <div id="div_template"></div>
+    <div id="page-wrap">
+        <div id="div_template"></div>
 
-    <p style="padding-left:45px; padding-top:45px">
-        <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            Advanced Plotting Options
-        </button>
-    </p>
-    <div class="collapse" id="collapseExample" style="padding-left:40px">
-        <div class="card card-body" style="width:1340px">
-            <div style="padding-left:45px">
-                <select class="custom-select" style="width:200px">
-                    <option selected>Choose y-axis</option>
-                    <option value="1">GC</option>
-                    <option value="2">AT</option>
-                    <option value="3">Quality Score</option>
-                </select>
+        <p style="padding-left:45px; padding-top:45px">
+            <button class="btn btn-light" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                Advanced Plotting Options
+            </button>
+        </p>
+        <div class="collapse" id="collapseExample" style="padding-left:40px">
+            <div class="card card-body" style="width:1340px">
+                <div style="padding-left:45px">
+                    <select class="custom-select" style="width:200px">
+                        <option selected>Choose y-axis</option>
+                        <option value="1">GC</option>
+                        <option value="2">AT</option>
+                        <option value="3">Quality Score</option>
+                    </select>
+                </div>
+                    
+                <div class="custom-control custom-switch" style="padding-left:80px">
+                    <input type="checkbox" class="custom-control-input" id="toggleRS" unchecked>
+                    <label class="custom-control-label" for="toggleRS">View Restriction Sites?</label>
+                </div>
+                    
+                <div class="custom-control custom-switch" style="padding-left:80px">
+                    <input type="checkbox" class="custom-control-input" id="toggleRep" unchecked>    
+                    <label class="custom-control-label" for="toggleRep">View Repetitive Regions?</label>
+                </div>
             </div>
-                
-            <div class="custom-control custom-switch" style="padding-left:80px">
-                <input type="checkbox" class="custom-control-input" id="toggleRS" unchecked>
-                <label class="custom-control-label" for="toggleRS">View Restriction Sites?</label>
-            </div>
-                
-            <div class="custom-control custom-switch" style="padding-left:80px">
-                <input type="checkbox" class="custom-control-input" id="toggleRep" unchecked>    
-                <label class="custom-control-label" for="toggleRep">View Repetitive Regions?</label>
-            </div>
-        </div>
-    </div> 
+        </div> 
+        
+        <div id="test"></div>
     
-    <div id="test"></div>
-
-    <script src="index.js"></script>
-
-    
+        <script src="index.js"></script>
+    </div>
     
 </body>
 
