@@ -22,4 +22,20 @@
 
 #probeTable_wrapper {
     width:1400px;
+    margin: 0 auto;
+}
+
+#regionView {
+    width: 1400px;
+    margin: 0 auto;
+}
+
+#summaryView {
+    width: 1400px;
+    margin: 0 auto;
+}
+
+#page-wrap {
+    width:1400px;
+    margin: 0 auto;
 }
