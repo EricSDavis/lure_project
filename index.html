@@ -30,11 +30,14 @@
         <div class="collapse" id="collapseExample" style="padding-left:40px">
             <div class="card card-body" style="width:1340px">
                 <div style="padding-left:45px">
-                    <select class="custom-select" style="width:200px">
-                        <option selected>Choose y-axis</option>
-                        <option value="1">GC</option>
-                        <option value="2">AT</option>
-                        <option value="3">Quality Score</option>
+                    <select id="ydata" class="custom-select" style="width:250px">
+                        <option style="display:none;" selected>Choose y-axis</option>
+                        <option value="GC">GC</option>
+                        <option value="AT">AT</option>
+                        <option value="shift">Distance from Restriction Site</option>
+                        <option value="rep">Repetitive Bases</option>
+                        <option value="qualityScore">Quality Score</option>
+                        <option value="gcScore">GC Score</option>
                     </select>
                 </div>
                     

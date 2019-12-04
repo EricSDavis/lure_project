@@ -7,13 +7,14 @@ var colNames = ["Chr", "Start", "Stop", "Shift", "resFrag", "Dir", "AT", "GC", "
 // Define function to plot region view
 function regionView(data, data2) {
     // Define plotting parameters
-    var margin = {top: 10, right: 30, bottom: 30, left: 40};
+    var margin = {top: 10, right: 30, bottom: 30, left: 50};
     var width = 1400 - margin.left - margin.right;
     var height = 400 - margin.top - margin.bottom;
     var xmin = d3.min(data, function(d) { return +d.start; });
     var xmax = d3.max(data, function(d) { return +d.stop; });
     var ymin = 0;
     var ymax = 1;
+    ymin = (ymax - ymin)*0.1*-1; // Adjust bottom of y-axis
     var fillLevels = ["High", "Medium", "Low"];
 
     // Calculate repetitiveRegions, splitLetters, and seqLetters from data2 before scaling functions
@@ -57,14 +58,14 @@ function regionView(data, data2) {
 
     // Append y-axis gridline
     regionPlot.append("g")
-    .attr("class", "grid")
-        .call(d3.axisLeft(y).ticks(5,"s")
+        .attr("class", "grid")
+        .call(d3.axisLeft(y).ticks(5)
         .tickSize(-width)
         .tickFormat(""));
 
    // Append y-axis
-   regionPlot.append("g")
-         .call(d3.axisLeft(y).ticks(5,"s"));
+   var yaxis = regionPlot.append("g")
+         .call(d3.axisLeft(y).ticks(5));
          
     // Append x-axis
     var xaxis = regionPlot
@@ -92,6 +93,7 @@ function regionView(data, data2) {
 
     // text label for the y axis
     regionPlot.append("text")
+        .attr("id", "ylabel")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
         .attr("x",0 - (height / 2))
@@ -153,22 +155,75 @@ function regionView(data, data2) {
 
     // Clip path and main object definition
     regionPlot
-        .append("g")
-        .attr("clip-path", "url(#clip)")
-        .attr("id", "regionPlot")
-        .selectAll("rect")
-        .data(data)
-        .enter()
-        .append("rect")
-            .attr("height", height*0.025)
-            .attr("width", d => x(+d.stop) - x(+d.start))
-            .attr('x', d => x(+d.start))
-            //.attr("y", function() { return y(Math.random()); });
-            .attr("y", function(d) { return y(d.GC); })
-            .attr("fill", function(d) { return quality(d.quality); })
-        .on("mouseover", mouseover)
-        .on("mousemove", mousemove)
-        .on("mouseleave", mouseleave);
+         .append("g")
+         .attr("clip-path", "url(#clip)")
+         .attr("id", "regionPlot")
+         .selectAll("rect")
+         .data(data)
+         .enter()
+         .append("rect")
+             .attr("height", height*0.025)
+             .attr("width", d => x(+d.stop) - x(+d.start))
+             .attr('x', d => x(+d.start))
+             .attr("y", function(d) { return y(d.GC)-(height*0.025)/2; })
+             .attr("fill", function(d) { return quality(d.quality); })
+         .on("mouseover", mouseover)
+         .on("mousemove", mousemove)
+         .on("mouseleave", mouseleave);
+
+
+
+    // Define update function for y-axis positions
+    function updateRegionView(ydata, ylab){
+
+        // Redefine ymin and ymax
+        var ymax = d3.max(data, function(d) { return +d[ydata]; });
+        var ymin = d3.min(data, function(d) { return +d[ydata]; });
+        ymax < 1 ? ymax = 1 : undefined;
+        ymin = (ymax - ymin)*0.1*-1;
+
+        // Redefine y-axis scaling function
+        var y = d3.scaleLinear()
+            .domain([ymin, ymax])
+            .range([height, 0])
+
+        // Update y-axis
+        yaxis
+            .transition()
+            .duration(1500)
+            .call(d3.axisLeft(y).ticks(5));
+
+        // Update y-axis grid
+        d3.select(".grid")
+            .transition()
+            .duration(1500)
+            .call(d3.axisLeft(y).ticks(5)
+            .tickSize(-width)
+            .tickFormat(""));
+
+        // Update y-axis positions
+        d3.select("#regionPlot")
+            .selectAll("rect")
+            .transition()
+            .duration(500)
+                .attr("y", function(d) { return y(d[ydata])-(height*0.025)/2})
+            .delay(function(d,i){
+                return i^10*i;
+            });
+        
+        // Update y-axis label
+        d3.select("#ylabel")
+            .text(ylab);
+    }
+
+    // Handle y-axis selection event
+    d3.select('#ydata')
+        .on('change', function() {
+            // Update ydata and ylab
+            ydata = this.value;
+            ylab = $( "#ydata option:selected" ).text();
+            updateRegionView(ydata, ylab);
+        });
 
     // Use data2 to plot restriction sites
     // Append restriction site lines
@@ -274,7 +329,6 @@ function regionView(data, data2) {
             .selectAll("rect")
                 .data(data)
                 .attr('x', function(d) {return x(+d.start)})
-                .attr("y", function(d) { return y(d.GC); })
                 .attr("transform","translate(" + transform.x + "," + 0 + ") scale(" + transform.k + "," + 1 + ")")
                 
 
