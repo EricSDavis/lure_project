@@ -14,7 +14,9 @@ function regionView(data, data2) {
     var xmax = d3.max(data, function(d) { return +d.stop; });
     var ymin = 0;
     var ymax = 1;
-    ymin = (ymax - ymin)*0.1*-1; // Adjust bottom of y-axis
+    var adjust = (ymax - ymin)*0.1;
+    ymin = adjust*-1; // Adjust bottom of y-axis
+    ymax = ymax+adjust
     var fillLevels = ["High", "Medium", "Low"];
 
     // Calculate repetitiveRegions, splitLetters, and seqLetters from data2 before scaling functions
@@ -180,7 +182,10 @@ function regionView(data, data2) {
         var ymax = d3.max(data, function(d) { return +d[ydata]; });
         var ymin = d3.min(data, function(d) { return +d[ydata]; });
         ymax < 1 ? ymax = 1 : undefined;
-        ymin = (ymax - ymin)*0.1*-1;
+        // ymin = (ymax - ymin)*0.1*-1;
+        var adjust = (ymax - ymin)*0.1;
+        ymin = adjust*-1; // Adjust bottom of y-axis
+        ymax = ymax+adjust;
 
         // Redefine y-axis scaling function
         var y = d3.scaleLinear()
@@ -236,7 +241,7 @@ function regionView(data, data2) {
             .attr("x1", d => x(d.stop))
             .attr("y1", height)
             .attr("x2", d => x(d.stop))
-            .attr("y2", y(1))
+            .attr("y2", 0)
             .attr("stroke", "lightgrey")
             .attr("vector-effect", "non-scaling-stroke")
 
@@ -251,7 +256,7 @@ function regionView(data, data2) {
             .attr("width", d => x(+d.end) - x(+d.start))
             .attr("height", d => height)
             .attr("x", d => x(+d.start))
-            .attr("y", y(1))
+            .attr("y", 0)
             .attr("fill", "red")
             .attr("opacity", 0.1)
              
